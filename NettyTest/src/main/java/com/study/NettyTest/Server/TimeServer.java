@@ -55,7 +55,7 @@ public class TimeServer {
 			try {
 				port = Integer.valueOf(args[0]);
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		}
 		
