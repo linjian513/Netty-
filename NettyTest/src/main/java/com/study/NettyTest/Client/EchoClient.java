@@ -37,6 +37,14 @@ import io.netty.handler.codec.string.StringDecoder;
 	at java.lang.Thread.run(Thread.java:745)
  * @author jian01.lin
  *
+ *2017-09-11 23：20 找到原因，原来是客户端写成了：
+ *ChannelFuture f = b.bind(host, port).sync();
+ *应该是：
+ *ChannelFuture f = b.connect(host, port).sync();
+ *
+ *服务端才是使用bind，客户端使用connect
+ *
+ *
  */
 public class EchoClient {
 	public void connect(int port, String host) throws InterruptedException{
@@ -50,18 +58,19 @@ public class EchoClient {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
-						ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());
-						
+						ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());	
 						ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
+						
 						ch.pipeline().addLast(new StringDecoder());
 						ch.pipeline().addLast(new EchoClientHandler());
+						
 					}
 				});
 			
 			
 			//发起异步连接操作
-			ChannelFuture f = b.bind(host, port).sync();
-			
+			//ChannelFuture f = b.bind(host, port).sync();
+			ChannelFuture f = b.connect(host, port).sync();
 			
 			//等待客户端链路关闭
 			f.channel().closeFuture().sync();
@@ -92,7 +101,7 @@ public class EchoClient {
 			try{
 				port = Integer.valueOf(args[0]);
 			}catch(Exception e){
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		

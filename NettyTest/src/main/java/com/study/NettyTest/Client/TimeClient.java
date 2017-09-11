@@ -32,6 +32,7 @@ public class TimeClient {
 						
 						
 						ch.pipeline().addLast(new TimeClientHandler());
+						
 					}
 				});
 			

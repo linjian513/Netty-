@@ -18,7 +18,13 @@ public class EchoServerHandler extends ChannelHandlerAdapter{
 		body += "$_";
 		
 		ByteBuf echoByteBuf = Unpooled.copiedBuffer(body.getBytes());
-		ctx.write(echoByteBuf);
+		
+		/**
+		 * 必须使用writeAndFlush方法，如果使用write方法将无法将消息发送到客户端。
+		 * 
+		 * writeAndFlush和write方法有什么不同？？？？？？？？？？？？？？？？？？
+		 */
+		ctx.writeAndFlush(echoByteBuf);
 		
 	}
 
